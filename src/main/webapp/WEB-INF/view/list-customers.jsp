@@ -4,17 +4,22 @@
 <head>
     <meta CHARSET="UTF-8">
     <title>List Customers</title>
+    <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css">
 </head>
 
 <body>
 <main>
-    <section  id="wrapper">
-        <div id="header">
+    <div id="wrapper">
+        <section id="header">
             <h2>CRM - Customer Relationship Manager</h2>
-        </div>
+        </section>
 
         <section id="container">
             <div id="content">
+
+                <input value="Add Customer" type="button"
+                       onclick="window.location.href='showFormForAdd'; return false;" class="add-button"/>
+
                 <table>
                     <tr>
                         <th>First Name</th>
@@ -31,7 +36,7 @@
                 </table>
             </div>
         </section>
-    </section>
+    </div>
 </main>
 </body>
 </html>
