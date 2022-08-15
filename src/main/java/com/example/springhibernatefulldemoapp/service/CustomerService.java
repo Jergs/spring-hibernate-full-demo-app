@@ -7,9 +7,8 @@ import java.util.List;
 public interface CustomerService {
 
     List<Customer> getCustomers();
-    void saveCustomer(Customer customer);
 
-    void updateCustomer(Customer customer);
+    void saveCustomer(Customer customer);
 
     Customer getCustomer(Integer id);
 

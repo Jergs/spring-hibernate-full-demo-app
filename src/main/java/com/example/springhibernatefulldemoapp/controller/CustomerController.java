@@ -34,13 +34,7 @@ public class CustomerController {
     public String showFormForUpdate(@RequestParam("customerId") Integer id, Model model) {
         Customer customer = customerService.getCustomer(id);
         model.addAttribute("customer", customer);
-        return "update-customer-form";
-    }
-
-    @PostMapping("/updateCustomer")
-    public String updateCustomer(@ModelAttribute(name = "customer") Customer customer) {
-        customerService.updateCustomer(customer);
-        return "redirect:/customer/list";
+        return "customer-form";
     }
 
     @PostMapping("/saveCustomer")

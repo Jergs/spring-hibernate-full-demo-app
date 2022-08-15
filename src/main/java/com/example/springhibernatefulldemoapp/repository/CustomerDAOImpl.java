@@ -1,51 +1,63 @@
 package com.example.springhibernatefulldemoapp.repository;
 
 import com.example.springhibernatefulldemoapp.entity.Customer;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 @Repository
 @Slf4j
+@AllArgsConstructor
 public class CustomerDAOImpl implements CustomerDAO {
 
-    private final EntityManager entityManager;
+    private final SessionFactory sessionFactory;
 
-    public CustomerDAOImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 
     @Override
     public List<Customer> getCustomers() {
-        return entityManager.createQuery("FROM Customer", Customer.class).getResultList();
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Query<Customer> query = session.createQuery("from Customer", Customer.class);
+            transaction.commit();
+            return query.getResultList();
+        }
     }
 
     @Override
     public void saveCustomer(Customer customer) {
-        entityManager.persist(customer);
-    }
-
-    @Override
-    public void updateCustomer(Customer customer) {
-        entityManager.merge(customer);
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            session.saveOrUpdate(customer);
+            transaction.commit();
+        }
     }
 
     @Override
     public Customer getCustomer(Integer id) {
-        return entityManager.find(Customer.class, id);
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Customer customer = session.get(Customer.class, id);
+            transaction.commit();
+            return customer;
+        }
     }
 
     @Override
     public void deleteCustomer(Integer id) {
-        Customer customer = entityManager.find(Customer.class, id);
-        entityManager.remove(customer);
-        flushAndClear();
-    }
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
 
-    private void flushAndClear() {
-        entityManager.flush();
-        entityManager.clear();
+            Query query = session.createQuery("delete from Customer where id=:customerId");
+            query.setParameter("customerId", id);
+            query.executeUpdate();
+
+            transaction.commit();
+        }
     }
 }
