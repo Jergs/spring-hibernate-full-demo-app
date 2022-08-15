@@ -1,32 +1,51 @@
 package com.example.springhibernatefulldemoapp.repository;
 
 import com.example.springhibernatefulldemoapp.entity.Customer;
-import lombok.AllArgsConstructor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 @Repository
-@AllArgsConstructor
+@Slf4j
 public class CustomerDAOImpl implements CustomerDAO {
 
-    private final SessionFactory sessionFactory;
+    private final EntityManager entityManager;
+
+    public CustomerDAOImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public List<Customer> getCustomers() {
-        try (Session session = sessionFactory.openSession()) {
-            Query<Customer> query = session.createQuery("FROM Customer", Customer.class);
-            return query.getResultList();
-        }
+        return entityManager.createQuery("FROM Customer", Customer.class).getResultList();
     }
 
     @Override
     public void saveCustomer(Customer customer) {
-        try (Session session = sessionFactory.openSession()) {
-            session.save(customer);
-        }
+        entityManager.persist(customer);
+    }
+
+    @Override
+    public void updateCustomer(Customer customer) {
+        entityManager.merge(customer);
+    }
+
+    @Override
+    public Customer getCustomer(Integer id) {
+        return entityManager.find(Customer.class, id);
+    }
+
+    @Override
+    public void deleteCustomer(Integer id) {
+        Customer customer = entityManager.find(Customer.class, id);
+        entityManager.remove(customer);
+        flushAndClear();
+    }
+
+    private void flushAndClear() {
+        entityManager.flush();
+        entityManager.clear();
     }
 }

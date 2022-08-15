@@ -5,10 +5,7 @@ import com.example.springhibernatefulldemoapp.service.CustomerServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -33,9 +30,28 @@ public class CustomerController {
         return "customer-form";
     }
 
+    @GetMapping("/showFormForUpdate")
+    public String showFormForUpdate(@RequestParam("customerId") Integer id, Model model) {
+        Customer customer = customerService.getCustomer(id);
+        model.addAttribute("customer", customer);
+        return "update-customer-form";
+    }
+
+    @PostMapping("/updateCustomer")
+    public String updateCustomer(@ModelAttribute(name = "customer") Customer customer) {
+        customerService.updateCustomer(customer);
+        return "redirect:/customer/list";
+    }
+
     @PostMapping("/saveCustomer")
     public String saveCustomer(@ModelAttribute(name = "customer") Customer customer) {
         customerService.saveCustomer(customer);
+        return "redirect:/customer/list";
+    }
+
+    @GetMapping("/delete")
+    public String deleteCustomer(@RequestParam("customerId") Integer id, Model model) {
+        customerService.deleteCustomer(id);
         return "redirect:/customer/list";
     }
 }
